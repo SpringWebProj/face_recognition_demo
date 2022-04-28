@@ -1,43 +1,39 @@
-import threading
+# camera.py
 
 import cv2
-from django.shortcuts import render
-
-from django.views.decorators import gzip
-from django.http import StreamingHttpResponse
-
 
 class VideoCamera(object):
     def __init__(self):
-        print("success")
+        # Using OpenCV to capture from device 0. If you have trouble capturing
+        # from a webcam, comment the line below out and use a video file
+        # instead.
         self.video = cv2.VideoCapture(0)
-        (self.grabbed, self.frame) = self.video.read()
-        threading.Thread(target=self.update, args=()).start()
+        # If you decide to use video.mp4, you must have this file in the folder
+        # as the main.py.
+        # self.video = cv2.VideoCapture('video.mp4')
 
     def __del__(self):
         self.video.release()
 
     def get_frame(self):
-        image = self.frame
-        _, jpeg = cv2.imencode('.jpg', image)
-        return jpeg.tobytes()
-
-    def update(self):
-        while True:
-            (self.grabbed, self.frame) = self.video.read()
+        # Grab a single frame of video
+        ret, frame = self.video.read()
+        return frame
 
 
-def gen(camera):
+if __name__ == '__main__':
+    cam = VideoCamera()
     while True:
-        frame = camera.get_frame()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+        frame = cam.get_frame()
 
-@gzip.gzip_page
-def livefe(request):
-    try:
-        cam = VideoCamera()
-        return StreamingHttpResponse(gen(cam), content_type="multipart/x-mixed-replace;boundary=frame")
-    except:
-        pass
-    return render(request, 'monitor.html')
+        # show the frame
+        cv2.imshow("Frame", frame)
+        key = cv2.waitKey(1) & 0xFF
+
+        # if the `q` key was pressed, break from the loop
+        if key == ord("q"):
+            break
+
+    # do a bit of cleanup
+    cv2.destroyAllWindows()
+    print('finish')

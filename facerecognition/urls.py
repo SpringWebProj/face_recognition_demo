@@ -15,16 +15,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+
+import streaming
 from app import views
 from django.conf import settings
 from django.conf.urls.static import static
 
-from django.http import StreamingHttpResponse
-from camera import VideoCamera, gen
+from django.http import StreamingHttpResponse  # used for Streaming video, to load big data
+from streaming import VideoCamera, gen  # funcs import from streaming.py for Streaming video
 
 urlpatterns = [
-path('monitor/', lambda r: StreamingHttpResponse(gen(VideoCamera()),
-                                                     content_type='multipart/x-mixed-replace; boundary=frame')),
+    # (path)/streaming : url where the video is streaming
+    path('streaming/', lambda r: StreamingHttpResponse(gen(VideoCamera()),
+                                                       content_type='multipart/x-mixed-replace; boundary=frame')),
+    path('monitor/', streaming.monitor, name='monitor'),  # (path)/monitor : render monitor.html in template
+    # path('test/', streaming.test, name='test'),
+    path('test/', views.msg, name='msg'),
     path('admin/', admin.site.urls),
     path('',views.index,name='index'),
 ]+static(settings.MEDIA_URL , document_root = settings.MEDIA_ROOT)

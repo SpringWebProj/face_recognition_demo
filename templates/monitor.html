@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitor</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <h1>Monitor</h1>
+    <h1>Video...</h1>
+
+    <div id="msg" class="alert {{ message.tags }} alert-auto-dismissible alert-dismissible notification-container text-center"
+                style="display:block;">
+        {% for message in messages %}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            {{ message.message }}
+	    {% endfor %}
+     </div>
+
+    <div id="screen" style="padding:10px;">
+        <img src="http://127.0.0.1:8000/streaming" style="display:block; margin:0 auto;" />
+    </div>
+    <a href="{% url 'msg' %}">인식</a>
+
+    <script>
+        setInterval(function(){
+            $("#msg").load(window.location.href + " #msg");
+        },1000);
+        window.setTimeout(function(){
+<!--            $(".alert-auto-dismissible").attr("style", "display:block");-->
+<!--            $(".alert-auto-dismissible").fadeTo(500,0).slideUp(500,function(){-->
+<!--                $(this).remove();-->
+<!--            });-->
+        }, 3000);
+    </script>
+</body>
+</html>

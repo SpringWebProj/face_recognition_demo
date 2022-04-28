@@ -1,5 +1,8 @@
+from django.contrib import messages
 from django.shortcuts import render
 from django.http import HttpResponse
+
+import streaming
 from app.forms import FaceRecognitionform
 from app.machinelearning import pipeline_model
 from django.conf import settings
@@ -30,3 +33,17 @@ def index(request):
 
 
     return render(request,'index.html',{'form':form,'uplaod':False})
+
+
+def msg(request):
+    while True:
+        check = streaming.cc
+        print(check)
+        if check:
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                '인식 성공'
+            )
+        return render(request, 'test.html')
+        # return render(request, 'monitor.html')
